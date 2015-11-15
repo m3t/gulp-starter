@@ -9,7 +9,9 @@ var uglify = require('gulp-uglify')
 // 4) Rev and compress CSS and JS files (this is done after assets, so that if a
 //    referenced asset hash changes, the parent hash will change as well
 gulp.task('rev-css', function(){
-  return gulp.src(path.join(config.root.dest,'/**/*.css'))
+  var ignoreThese = '!' + path.join(config.root.dest,'/vendors/**/*.*')
+
+  return gulp.src([path.join(config.root.dest, '/**/*.css'), ignoreThese])
     .pipe(rev())
     .pipe(minify())
     .pipe(gulp.dest(config.root.dest))

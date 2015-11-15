@@ -9,7 +9,7 @@ gulp.task('rev-assets', function() {
   // Ignore files that may reference assets. We'll rev them next.
   var ignoreThese = '!' + path.join(config.root.dest,'/**/*+(css|js|json|html)')
 
-  return gulp.src([path.join(config.root.dest,'/**/*'), ignoreThese])
+  return gulp.src([path.join(config.root.dest,'/**/*'), ignoreThese, '!' + path.join(config.root.dest,'/@(favicon\.ico|humans\.txt|category-sitemap\.xml|page-sitemap\.xml|post-sitemap\.xml|tag-sitemap\.xml|robots\.txt)')])
     .pipe(rev())
     .pipe(gulp.dest(config.root.dest))
     .pipe(revNapkin({verbose: false}))

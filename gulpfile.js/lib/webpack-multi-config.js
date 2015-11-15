@@ -5,14 +5,28 @@ var path            = require('path')
 var webpack         = require('webpack')
 var webpackManifest = require('./webpackManifest')
 
+var glob_entries = require('webpack-glob-entries')
+//var util = require('gulp-util') // for debugging: util.log()
+
+
 module.exports = function(env) {
   var jsSrc = path.resolve(config.root.src, config.tasks.js.src)
+  var jsSrcPf = path.resolve(config.root.src, config.tasks.js.src, 'polyfills')
   var jsDest = path.resolve(config.root.dest, config.tasks.js.dest)
   var publicPath = path.join(config.tasks.js.dest, '/')
+  var publicPathPf = path.join(config.tasks.js.dest,'/polyfills', '/')
   var filenamePattern = env === 'production' ? '[name]-[hash].js' : '[name].js'
+  var filenamePatternPf = '[name].js'
   var extensions = config.tasks.js.extensions.map(function(extension) {
     return '.' + extension
   })
+
+  if(env === 'polyfills') {
+    jsSrc = jsSrcPf
+    jsDest = jsSrcPf
+    publicPath = publicPathPf
+    filenamePattern = filenamePatternPf
+  }
 
   var webpackConfig = {
     context: jsSrc,
@@ -53,12 +67,16 @@ module.exports = function(env) {
     }
   }
 
+  if(env === 'polyfills') {
+    webpackConfig.entry = glob_entries(jsSrcPf + '/*.js')
+  }
+
   if(env === 'development') {
     webpackConfig.devtool = 'source-map'
     webpack.debug = true
   }
 
-  if(env === 'production') {
+  if(env === 'production' || env === 'polyfills') {
     webpackConfig.plugins.push(
       new webpackManifest(publicPath, config.root.dest),
       new webpack.DefinePlugin({
